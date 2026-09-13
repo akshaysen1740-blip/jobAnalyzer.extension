@@ -1,0 +1,20 @@
+{
+  "name": "extension",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "esbuild src/content.ts src/background.ts --bundle --outdir=dist",
+    "dev": "esbuild src/content.ts src/background.ts --bundle --outdir=dist --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@types/chrome": "^0.2.9",
+    "concurrently": "^10.0.5",
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
