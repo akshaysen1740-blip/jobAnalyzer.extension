@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "esbuild src/content.ts src/background.ts src/popup.ts --bundle --outdir=dist",
-    "dev": "esbuild src/content.ts src/background.ts src/popup.ts --bundle --outdir=dist --watch"
+    "build": "esbuild src/content.ts src/background.ts --bundle --outdir=dist",
+    "dev": "esbuild src/content.ts src/background.ts --bundle --outdir=dist --watch"
   },
   "keywords": [],
   "author": "",
