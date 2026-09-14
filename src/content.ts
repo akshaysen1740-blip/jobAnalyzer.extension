@@ -1,15 +1,27 @@
+import { analyzeJob } from "./background";
+
 console.log("LinkedIn Job Analyzer loaded");
 
 function getJobDescription(): string | null {
-  const element = document.querySelector(
-    '[data-testid="expandable-text-box"]'
-  );
+  const element = document.querySelector('[data-testid="expandable-text-box"]');
 
   if (!element) {
     return null;
   }
 
-  return element.textContent?.trim() ?? null;
+  // Clone the element so we don't modify LinkedIn's actual DOM
+  const clone = element.cloneNode(true) as HTMLElement;
+
+  // Remove the "… more" button
+  const moreButton = clone.querySelector(
+    '[data-testid="expandable-text-button"]',
+  );
+
+  moreButton?.remove();
+
+  const description = clone.textContent?.trim() ?? "";
+
+  return description || null;
 }
 
 function waitForJobDescription(): Promise<string> {
@@ -40,15 +52,8 @@ function waitForJobDescription(): Promise<string> {
 async function main() {
   const jobDescription = await waitForJobDescription();
 
-  console.log("Job description found!");
-  console.log("Description length:", jobDescription.length);
-  console.log("Description:", jobDescription);
-
   try {
     const result = await analyzeJob(jobDescription);
-
-    console.log("AI RESULT:");
-    console.log(result);
   } catch (error) {
     console.error("Analysis error:", error);
   }

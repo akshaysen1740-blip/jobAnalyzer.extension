@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener(
   }
 );
 
-async function analyzeJob(
+export async function analyzeJob(
   jobDescription: string
 ) {
   const response = await fetch(
