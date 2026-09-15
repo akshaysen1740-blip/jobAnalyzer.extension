@@ -1,7 +1,12 @@
 export interface JobSummary {
   title: string | null;
-  company: string | null;
+
+  profileName: string | null;
+
+  companyName: string | null;
+
   location: string | null;
+
   qualification: string | null;
 
   experience: {
@@ -18,16 +23,28 @@ export interface JobSummary {
   }[];
 
   responsibilities: string[];
+
   requirements: string[];
+
   niceToHave: string[];
 }
 
+/**
+ * Create the analyzer sidebar.
+ *
+ * The panel is created once but starts hidden.
+ */
 export function createAnalyzerPanel() {
-  if (document.getElementById("job-analyzer-panel")) {
+  if (
+    document.getElementById(
+      "job-analyzer-panel"
+    )
+  ) {
     return;
   }
 
-  const style = document.createElement("style");
+  const style =
+    document.createElement("style");
 
   style.textContent = `
     #job-analyzer-panel {
@@ -42,6 +59,7 @@ export function createAnalyzerPanel() {
       z-index: 999999;
       font-family: Arial, sans-serif;
       color: #1f1f1f;
+      display: none;
     }
 
     .job-analyzer-header {
@@ -132,18 +150,57 @@ export function createAnalyzerPanel() {
       color: #b42318;
       font-size: 14px;
     }
+
+    .job-analyzer-redirect {
+      text-align: center;
+      margin-top: 80px;
+    }
+
+    .job-analyzer-redirect h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .job-analyzer-redirect p {
+      color: #666;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+
+    .job-analyzer-jobs-button {
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      background: #0a66c2;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .job-analyzer-jobs-button:hover {
+      background: #004182;
+    }
   `;
 
   document.head.appendChild(style);
 
-  const panel = document.createElement("div");
+  const panel =
+    document.createElement("div");
 
-  panel.id = "job-analyzer-panel";
+  panel.id =
+    "job-analyzer-panel";
 
   panel.innerHTML = `
     <div class="job-analyzer-header">
       <h2>Job Analyzer</h2>
-      <button id="job-analyzer-close">×</button>
+
+      <button
+        id="job-analyzer-close"
+        type="button"
+      >
+        ×
+      </button>
     </div>
 
     <div
@@ -159,16 +216,123 @@ export function createAnalyzerPanel() {
   document.body.appendChild(panel);
 
   document
-    .getElementById("job-analyzer-close")
-    ?.addEventListener("click", () => {
-      panel?.remove();
-    });
+    .getElementById(
+      "job-analyzer-close"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+        hideAnalyzerPanel();
+      }
+    );
 }
 
+/**
+ * Show the analyzer sidebar.
+ */
+export function showAnalyzerPanel() {
+  const panel =
+    document.getElementById(
+      "job-analyzer-panel"
+    );
+
+  if (!panel) {
+    return;
+  }
+
+  panel.style.display = "block";
+}
+
+/**
+ * Hide the analyzer sidebar.
+ */
+export function hideAnalyzerPanel() {
+  const panel =
+    document.getElementById(
+      "job-analyzer-panel"
+    );
+
+  if (!panel) {
+    return;
+  }
+
+  panel.style.display = "none";
+}
+
+/**
+ * Check whether the analyzer sidebar is open.
+ */
+export function isPanelOpen(): boolean {
+  const panel =
+    document.getElementById(
+      "job-analyzer-panel"
+    );
+
+  if (!panel) {
+    return false;
+  }
+
+  return panel.style.display !== "none";
+}
+
+/**
+ * Show a message when the user is not
+ * currently on LinkedIn Jobs.
+ */
+export function renderJobsRedirect() {
+  const container =
+    document.getElementById(
+      "job-analyzer-content"
+    );
+
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="job-analyzer-redirect">
+
+      <h3>
+        LinkedIn Jobs
+      </h3>
+
+      <p>
+        Open the LinkedIn Jobs section
+        to analyze job postings.
+      </p>
+
+      <button
+        id="job-analyzer-jobs-button"
+        class="job-analyzer-jobs-button"
+        type="button"
+      >
+        Go to LinkedIn Jobs
+      </button>
+
+    </div>
+  `;
+
+  document
+    .getElementById(
+      "job-analyzer-jobs-button"
+    )
+    ?.addEventListener(
+      "click",
+      () => {
+        window.location.href =
+          "https://www.linkedin.com/jobs/";
+      }
+    );
+}
+
+/**
+ * Show loading state.
+ */
 export function renderLoading() {
-  const container = document.getElementById(
-    "job-analyzer-content"
-  );
+  const container =
+    document.getElementById(
+      "job-analyzer-content"
+    );
 
   if (!container) {
     return;
@@ -181,10 +345,16 @@ export function renderLoading() {
   `;
 }
 
-export function renderError(message: string) {
-  const container = document.getElementById(
-    "job-analyzer-content"
-  );
+/**
+ * Show error state.
+ */
+export function renderError(
+  message: string
+) {
+  const container =
+    document.getElementById(
+      "job-analyzer-content"
+    );
 
   if (!container) {
     return;
@@ -197,11 +367,16 @@ export function renderError(message: string) {
   `;
 }
 
-
-export function renderJobAnalysis(result: JobSummary) {
-  const container = document.getElementById(
-    "job-analyzer-content"
-  );
+/**
+ * Render the AI job analysis.
+ */
+export function renderJobAnalysis(
+  result: JobSummary
+) {
+  const container =
+    document.getElementById(
+      "job-analyzer-content"
+    );
 
   if (!container) {
     return;
@@ -217,102 +392,157 @@ export function renderJobAnalysis(result: JobSummary) {
 
   container.innerHTML = `
     <div class="job-analyzer-section">
+
       <h1 class="job-analyzer-title">
         ${result.title ?? "Untitled position"}
       </h1>
 
       <div class="job-analyzer-company">
-        ${result.company ?? "Company not specified"}
+        ${result.companyName ?? "Company not specified"}
+        ${
+          result.profileName
+            ? ` · ${result.profileName}`
+            : ""
+        }
         ${
           result.location
             ? ` · ${result.location}`
             : ""
         }
       </div>
+
     </div>
 
     <div class="job-analyzer-section">
       <h3>Experience</h3>
-      <div>${experience}</div>
+
+      <div>
+        ${experience}
+      </div>
     </div>
 
     <div class="job-analyzer-section">
       <h3>Qualification</h3>
+
       <div>
-        ${result.qualification ?? "Not specified"}
+        ${
+          result.qualification ??
+          "Not specified"
+        }
       </div>
     </div>
 
     <div class="job-analyzer-section">
       <h3>Seniority</h3>
+
       <div>
-        ${result.seniority ?? "Not specified"}
+        ${
+          result.seniority ??
+          "Not specified"
+        }
       </div>
     </div>
 
     <div class="job-analyzer-section">
+
       <h3>Technologies</h3>
 
       <div class="job-analyzer-tech">
-        ${result.technologies
-          .map(
-            (technology) => `
-              <span class="job-analyzer-tech-item">
-                ${technology.name}
-                ${
-                  technology.required
-                    ? `<span class="job-analyzer-required">
-                        *
-                       </span>`
-                    : ""
-                }
-              </span>
-            `
-          )
-          .join("")}
+
+        ${
+          result.technologies
+            .map(
+              (technology) => `
+                <span
+                  class="job-analyzer-tech-item"
+                >
+                  ${technology.name}
+
+                  ${
+                    technology.required
+                      ? `
+                        <span
+                          class="job-analyzer-required"
+                        >
+                          *
+                        </span>
+                      `
+                      : ""
+                  }
+
+                </span>
+              `
+            )
+            .join("")
+        }
+
       </div>
     </div>
 
     <div class="job-analyzer-section">
+
       <h3>Responsibilities</h3>
 
       <ul>
-        ${result.responsibilities
-          .map(
-            (item) => `
-              <li>${item}</li>
-            `
-          )
-          .join("")}
+
+        ${
+          result.responsibilities
+            .map(
+              (item) => `
+                <li>
+                  ${item}
+                </li>
+              `
+            )
+            .join("")
+        }
+
       </ul>
+
     </div>
 
     <div class="job-analyzer-section">
+
       <h3>Requirements</h3>
 
       <ul>
-        ${result.requirements
-          .map(
-            (item) => `
-              <li>${item}</li>
-            `
-          )
-          .join("")}
+
+        ${
+          result.requirements
+            .map(
+              (item) => `
+                <li>
+                  ${item}
+                </li>
+              `
+            )
+            .join("")
+        }
+
       </ul>
+
     </div>
 
     <div class="job-analyzer-section">
+
       <h3>Nice to Have</h3>
 
       <ul>
-        ${result.niceToHave
-          .map(
-            (item) => `
-              <li>${item}</li>
-            `
-          )
-          .join("")}
+
+        ${
+          result.niceToHave
+            .map(
+              (item) => `
+                <li>
+                  ${item}
+                </li>
+              `
+            )
+            .join("")
+        }
+
       </ul>
+
     </div>
   `;
 }
