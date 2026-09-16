@@ -35,31 +35,38 @@ export interface JobSummary {
  * The panel is created once but starts hidden.
  */
 export function createAnalyzerPanel() {
-  if (
-    document.getElementById(
-      "job-analyzer-panel"
-    )
-  ) {
+  if (document.getElementById("job-analyzer-panel")) {
     return;
   }
 
-  const style =
-    document.createElement("style");
+  const style = document.createElement("style");
 
   style.textContent = `
     #job-analyzer-panel {
       position: fixed;
       top: 0;
       right: 0;
-      width: 380px;
+      width: 25vw;
+      min-width: 320px;
+      max-width: 420px;
       height: 100vh;
-      background: #ffffff;
+
+      background: #fff;
       border-left: 1px solid #ddd;
       box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+
       z-index: 999999;
+      box-sizing: border-box;
+
       font-family: Arial, sans-serif;
       color: #1f1f1f;
+
       display: none;
+    }
+
+    #workspace.job-analyzer-open {
+      width: calc(100% - clamp(320px, 25vw, 420px)) !important;
+      max-width: calc(100% - clamp(320px, 25vw, 420px)) !important;
     }
 
     .job-analyzer-header {
@@ -185,11 +192,9 @@ export function createAnalyzerPanel() {
 
   document.head.appendChild(style);
 
-  const panel =
-    document.createElement("div");
+  const panel = document.createElement("div");
 
-  panel.id =
-    "job-analyzer-panel";
+  panel.id = "job-analyzer-panel";
 
   panel.innerHTML = `
     <div class="job-analyzer-header">
@@ -216,57 +221,51 @@ export function createAnalyzerPanel() {
   document.body.appendChild(panel);
 
   document
-    .getElementById(
-      "job-analyzer-close"
-    )
-    ?.addEventListener(
-      "click",
-      () => {
-        hideAnalyzerPanel();
-      }
-    );
+    .getElementById("job-analyzer-close")
+    ?.addEventListener("click", () => {
+      hideAnalyzerPanel();
+    });
 }
 
 /**
  * Show the analyzer sidebar.
  */
 export function showAnalyzerPanel() {
-  const panel =
-    document.getElementById(
-      "job-analyzer-panel"
-    );
+  const panel = document.getElementById("job-analyzer-panel");
 
-  if (!panel) {
+  const workspace = document.getElementById("workspace");
+
+  if (!panel || !workspace) {
     return;
   }
 
   panel.style.display = "block";
+
+  workspace.classList.add("job-analyzer-open");
 }
 
 /**
  * Hide the analyzer sidebar.
  */
 export function hideAnalyzerPanel() {
-  const panel =
-    document.getElementById(
-      "job-analyzer-panel"
-    );
+  const panel = document.getElementById("job-analyzer-panel");
 
-  if (!panel) {
+  const workspace = document.getElementById("workspace");
+
+  if (!panel || !workspace) {
     return;
   }
 
   panel.style.display = "none";
+
+  workspace.classList.remove("job-analyzer-open");
 }
 
 /**
  * Check whether the analyzer sidebar is open.
  */
 export function isPanelOpen(): boolean {
-  const panel =
-    document.getElementById(
-      "job-analyzer-panel"
-    );
+  const panel = document.getElementById("job-analyzer-panel");
 
   if (!panel) {
     return false;
@@ -280,10 +279,7 @@ export function isPanelOpen(): boolean {
  * currently on LinkedIn Jobs.
  */
 export function renderJobsRedirect() {
-  const container =
-    document.getElementById(
-      "job-analyzer-content"
-    );
+  const container = document.getElementById("job-analyzer-content");
 
   if (!container) {
     return;
@@ -313,26 +309,17 @@ export function renderJobsRedirect() {
   `;
 
   document
-    .getElementById(
-      "job-analyzer-jobs-button"
-    )
-    ?.addEventListener(
-      "click",
-      () => {
-        window.location.href =
-          "https://www.linkedin.com/jobs/";
-      }
-    );
+    .getElementById("job-analyzer-jobs-button")
+    ?.addEventListener("click", () => {
+      window.location.href = "https://www.linkedin.com/jobs/";
+    });
 }
 
 /**
  * Show loading state.
  */
 export function renderLoading() {
-  const container =
-    document.getElementById(
-      "job-analyzer-content"
-    );
+  const container = document.getElementById("job-analyzer-content");
 
   if (!container) {
     return;
@@ -348,13 +335,8 @@ export function renderLoading() {
 /**
  * Show error state.
  */
-export function renderError(
-  message: string
-) {
-  const container =
-    document.getElementById(
-      "job-analyzer-content"
-    );
+export function renderError(message: string) {
+  const container = document.getElementById("job-analyzer-content");
 
   if (!container) {
     return;
@@ -370,21 +352,15 @@ export function renderError(
 /**
  * Render the AI job analysis.
  */
-export function renderJobAnalysis(
-  result: JobSummary
-) {
-  const container =
-    document.getElementById(
-      "job-analyzer-content"
-    );
+export function renderJobAnalysis(result: JobSummary) {
+  const container = document.getElementById("job-analyzer-content");
 
   if (!container) {
     return;
   }
 
   const experience =
-    result.experience.min !== null ||
-    result.experience.max !== null
+    result.experience.min !== null || result.experience.max !== null
       ? `${result.experience.min ?? "Any"} - ${
           result.experience.max ?? "Any"
         } years`
@@ -399,16 +375,8 @@ export function renderJobAnalysis(
 
       <div class="job-analyzer-company">
         ${result.companyName ?? "Company not specified"}
-        ${
-          result.profileName
-            ? ` · ${result.profileName}`
-            : ""
-        }
-        ${
-          result.location
-            ? ` · ${result.location}`
-            : ""
-        }
+        ${result.profileName ? ` · ${result.profileName}` : ""}
+        ${result.location ? ` · ${result.location}` : ""}
       </div>
 
     </div>
@@ -425,10 +393,7 @@ export function renderJobAnalysis(
       <h3>Qualification</h3>
 
       <div>
-        ${
-          result.qualification ??
-          "Not specified"
-        }
+        ${result.qualification ?? "Not specified"}
       </div>
     </div>
 
@@ -436,10 +401,7 @@ export function renderJobAnalysis(
       <h3>Seniority</h3>
 
       <div>
-        ${
-          result.seniority ??
-          "Not specified"
-        }
+        ${result.seniority ?? "Not specified"}
       </div>
     </div>
 
@@ -449,10 +411,9 @@ export function renderJobAnalysis(
 
       <div class="job-analyzer-tech">
 
-        ${
-          result.technologies
-            .map(
-              (technology) => `
+        ${result.technologies
+          .map(
+            (technology) => `
                 <span
                   class="job-analyzer-tech-item"
                 >
@@ -471,10 +432,9 @@ export function renderJobAnalysis(
                   }
 
                 </span>
-              `
-            )
-            .join("")
-        }
+              `,
+          )
+          .join("")}
 
       </div>
     </div>
@@ -485,17 +445,15 @@ export function renderJobAnalysis(
 
       <ul>
 
-        ${
-          result.responsibilities
-            .map(
-              (item) => `
+        ${result.responsibilities
+          .map(
+            (item) => `
                 <li>
                   ${item}
                 </li>
-              `
-            )
-            .join("")
-        }
+              `,
+          )
+          .join("")}
 
       </ul>
 
@@ -507,17 +465,15 @@ export function renderJobAnalysis(
 
       <ul>
 
-        ${
-          result.requirements
-            .map(
-              (item) => `
+        ${result.requirements
+          .map(
+            (item) => `
                 <li>
                   ${item}
                 </li>
-              `
-            )
-            .join("")
-        }
+              `,
+          )
+          .join("")}
 
       </ul>
 
@@ -529,17 +485,15 @@ export function renderJobAnalysis(
 
       <ul>
 
-        ${
-          result.niceToHave
-            .map(
-              (item) => `
+        ${result.niceToHave
+          .map(
+            (item) => `
                 <li>
                   ${item}
                 </li>
-              `
-            )
-            .join("")
-        }
+              `,
+          )
+          .join("")}
 
       </ul>
 
