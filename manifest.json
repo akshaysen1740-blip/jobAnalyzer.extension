@@ -6,7 +6,11 @@
 
   "permissions": ["activeTab"],
 
-  "host_permissions": ["https://www.linkedin.com/*", "http://localhost:8000/*"],
+  "host_permissions": [
+    "https://www.linkedin.com/*",
+    "https://job-analysis.duckdns.org/*",
+    "http://localhost:8000/*"
+  ],
 
   "action": {
     "default_title": "LinkedIn Job Analyzer"
